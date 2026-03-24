@@ -15,7 +15,6 @@
     body{background:#0b0d14;font-family:sans-serif}
     #splash{position:fixed;inset:0;background:#0b0d14;display:flex;flex-direction:column;
       align-items:center;justify-content:center;gap:20px;z-index:9999;transition:opacity .4s}
-    #splash.hide{opacity:0;pointer-events:none}
     .spin{width:44px;height:44px;border:3px solid rgba(79,124,255,.15);
       border-top:3px solid #4f7cff;border-radius:50%;animation:sp .7s linear infinite}
     @keyframes sp{to{transform:rotate(360deg)}}
@@ -27,10 +26,9 @@
   <div id="splash">
     <div class="logo">💎</div>
     <div class="spin"></div>
-    <p>Cargando FamFinance...</p>
+    <p>Cargando...</p>
   </div>
   <div id="root"></div>
-
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script>
@@ -1416,7 +1414,7 @@ function Savings({entries,cats,onSaveEntry,sel,setSel,months}){
 // ============================================================
 // MAIN APP
 // ============================================================
-export default function App(){
+function App(){
   useEffect(injectStyles,[]);
 
   const [tab,   setTab]  = useState("dashboard");
@@ -1516,10 +1514,14 @@ export default function App(){
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));
-document.getElementById('splash').classList.add('hide');
-setTimeout(()=>{ const s=document.getElementById('splash'); if(s) s.remove(); }, 500);
+try {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(React.createElement(App));
+  const s = document.getElementById('splash');
+  if(s) { s.style.opacity='0'; setTimeout(()=>s.remove(),400); }
+} catch(e) {
+  document.getElementById('splash').innerHTML = '<div style="color:#f43f5e;padding:24px;font-family:sans-serif"><h2>Error</h2><pre style="font-size:11px;margin-top:12px;white-space:pre-wrap">'+e.message+'</pre></div>';
+}
 
   </script>
 </body>
