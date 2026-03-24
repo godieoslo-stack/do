@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="FamFinance"/>
+  <meta name="theme-color" content="#0b0d14"/>
+  <title>FamFinance 💎</title>
+  <link rel="manifest" href="manifest.json"/>
+</head>
+<body style="margin:0;background:#0b0d14">
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.2/babel.min.js"></script>
+  <script type="text/babel">
+
+
+// ============================================================
+// SEED DATA
+// ============================================================
+const CATEGORIES = [
+  { id:"1",  name:"Vivienda",        icon:"🏠", color:"#3b82f6" },
+  { id:"2",  name:"Servicios",       icon:"💡", color:"#f59e0b" },
+  { id:"3",  name:"Mercado",         icon:"🛒", color:"#10b981" },
+  { id:"4",  name:"Restaurantes",    icon:"🍽️", color:"#ef4444" },
+  { id:"5",  name:"Transporte",      icon:"🚗", color:"#8b5cf6" },
+  { id:"6",  name:"Gasolina",        icon:"⛽", color:"#f97316" },
+  { id:"7",  name:"Salud",           icon:"🏥", color:"#06b6d4" },
+  { id:"8",  name:"Educación",       icon:"📚", color:"#6366f1" },
+  { id:"9",  name:"Compras",         icon:"🛍️", color:"#ec4899" },
+  { id:"10", name:"Entretenimiento", icon:"🎬", color:"#14b8a6" },
+  { id:"11", name:"Viajes",          icon:"✈️", color:"#0ea5e9" },
+  { id:"12", name:"Mascotas",        icon:"🐾", color:"#a78bfa" },
+  { id:"13", name:"Colombia",        icon:"🇨🇴", color:"#facc15" },
+  { id:"14", name:"Ahorros",         icon:"💰", color:"#22c55e" },
+  { id:"15", name:"Otros",           icon:"📦", color:"#94a3b8" },
+];
+
+const SEED_ENTRIES = [
+  { id:"j1",  type:"gasto",  person:"Diego",      amount:1850, category_id:"1",  note:"Arriendo",         entry_date:"2025-01-02" },
+  { id:"j2",  type:"gasto",  person:"Compartido", amount:310,  category_id:"2",  note:"Servicios",        entry_date:"2025-01-05" },
+  { id:"j3",  type:"gasto",  person:"Kelly",      amount:420,  category_id:"3",  note:"Mercado",          entry_date:"2025-01-08" },
+  { id:"j4",  type:"gasto",  person:"Diego",      amount:85,   category_id:"4",  note:"Cena",             entry_date:"2025-01-12" },
+  { id:"j5",  type:"ahorro", person:"Diego",      amount:400,  category_id:"14", note:"Fondo",            entry_date:"2025-01-15" },
+  { id:"j6",  type:"gasto",  person:"Kelly",      amount:60,   category_id:"5",  note:"Uber",             entry_date:"2025-01-18" },
+  { id:"j7",  type:"gasto",  person:"Compartido", amount:180,  category_id:"10", note:"Netflix",          entry_date:"2025-01-20" },
+  { id:"j8",  type:"ahorro", person:"Kelly",      amount:250,  category_id:"13", note:"Colombia",         entry_date:"2025-01-22" },
+  { id:"j9",  type:"gasto",  person:"Diego",      amount:110,  category_id:"6",  note:"Gasolina",         entry_date:"2025-01-25" },
+  { id:"j10", type:"gasto",  person:"Kelly",      amount:150,  category_id:"9",  note:"Compras",          entry_date:"2025-01-28" },
+  { id:"f1",  type:"gasto",  person:"Diego",      amount:1850, category_id:"1",  note:"Arriendo",         entry_date:"2025-02-01" },
+  { id:"f2",  type:"gasto",  person:"Compartido", amount:295,  category_id:"2",  note:"Servicios",        entry_date:"2025-02-04" },
+  { id:"f3",  type:"gasto",  person:"Kelly",      amount:510,  category_id:"3",  note:"Mercado",          entry_date:"2025-02-07" },
+  { id:"f4",  type:"gasto",  person:"Diego",      amount:120,  category_id:"4",  note:"Cena San Valentín",entry_date:"2025-02-14" },
+  { id:"f5",  type:"ahorro", person:"Diego",      amount:500,  category_id:"14", note:"Fondo",            entry_date:"2025-02-10" },
+  { id:"f6",  type:"gasto",  person:"Kelly",      amount:80,   category_id:"5",  note:"Transporte",       entry_date:"2025-02-17" },
+  { id:"f7",  type:"gasto",  person:"Compartido", amount:190,  category_id:"10", note:"Entretenimiento",  entry_date:"2025-02-20" },
+  { id:"f8",  type:"ahorro", person:"Kelly",      amount:300,  category_id:"13", note:"Colombia",         entry_date:"2025-02-18" },
+  { id:"f9",  type:"gasto",  person:"Diego",      amount:95,   category_id:"6",  note:"Gasolina",         entry_date:"2025-02-22" },
+  { id:"f10", type:"gasto",  person:"Kelly",      amount:200,  category_id:"9",  note:"Ropa",             entry_date:"2025-02-25" },
+  { id:"e1",  type:"gasto",  person:"Diego",      amount:1850, category_id:"1",  note:"Arriendo",         entry_date:"2025-03-01" },
+  { id:"e2",  type:"gasto",  person:"Compartido", amount:320,  category_id:"2",  note:"Electricidad",     entry_date:"2025-03-03" },
+  { id:"e3",  type:"gasto",  person:"Kelly",      amount:480,  category_id:"3",  note:"Súper semanal",    entry_date:"2025-03-05" },
+  { id:"e4",  type:"gasto",  person:"Diego",      amount:95,   category_id:"4",  note:"Cena",             entry_date:"2025-03-07" },
+  { id:"e5",  type:"ahorro", person:"Diego",      amount:500,  category_id:"14", note:"Fondo emergencia", entry_date:"2025-03-08" },
+  { id:"e6",  type:"ahorro", person:"Kelly",      amount:300,  category_id:"13", note:"Colombia",         entry_date:"2025-03-09" },
+  { id:"e7",  type:"gasto",  person:"Kelly",      amount:65,   category_id:"5",  note:"Uber",             entry_date:"2025-03-10" },
+  { id:"e8",  type:"gasto",  person:"Diego",      amount:120,  category_id:"6",  note:"Gasolina",         entry_date:"2025-03-12" },
+  { id:"e9",  type:"gasto",  person:"Compartido", amount:200,  category_id:"10", note:"Netflix+Spotify",  entry_date:"2025-03-14" },
+  { id:"e10", type:"ahorro", person:"Compartido", amount:800,  category_id:"11", note:"Viaje verano",     entry_date:"2025-03-17" },
+  { id:"e11", type:"gasto",  person:"Kelly",      amount:180,  category_id:"9",  note:"Ropa",             entry_date:"2025-03-18" },
+  { id:"e12", type:"gasto",  person:"Diego",      amount:75,   category_id:"7",  note:"Farmacia",         entry_date:"2025-03-19" },
+  { id:"e13", type:"gasto",  person:"Compartido", amount:450,  category_id:"3",  note:"Mercado quincenal",entry_date:"2025-03-20" },
+  { id:"e14", type:"gasto",  person:"Kelly",      amount:90,   category_id:"4",  note:"Almuerzo",         entry_date:"2025-03-22" },
+  { id:"e15", type:"gasto",  person:"Diego",      amount:55,   category_id:"6",  note:"Gasolina",         entry_date:"2025-03-24" },
+];
+
+const SEED_BUDGET     = { total:6000, categories:{"1":2000,"2":400,"3":600,"4":200,"5":150,"6":200,"7":150,"8":100,"9":300,"10":250,"11":500,"12":100,"13":300,"14":600,"15":150} };
+const SEED_SETTLEMENTS= [];
+// Anchor = last settlement date. Interval = days between settlements.
+const SEED_CFG        = { anchorDate:"2025-03-13", intervalDays:14 };
+
+// ============================================================
+// DATE UTILS — pure local arithmetic, zero UTC drift
+// ============================================================
+function localDate(dateStr) {
+  // "YYYY-MM-DD" → local Date, never goes through UTC
+  const [y,m,d] = dateStr.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+function dateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function addDays(s, n) {
+  const d = localDate(s);
+  d.setDate(d.getDate() + n);
+  return dateStr(d);
+}
+function todayStr() {
+  return dateStr(new Date());
+}
+function fmtDate(s) {
+  return localDate(s).toLocaleDateString("es-CO", { day:"2-digit", month:"short" });
+}
+function fmtMonth(ym) {
+  // ym = "YYYY-MM"
+  const [y,m] = ym.split("-").map(Number);
+  return new Date(y, m-1, 1).toLocaleDateString("es-CO", { month:"short", year:"2-digit" });
+}
+
+// ============================================================
+// PERIOD ENGINE
+// ============================================================
+// anchorDate = the END date of the last completed settlement period.
+// Every period going forward is [anchor+1 .. anchor+interval].
+// Going backward from anchor we build historical periods.
+function buildPeriods(anchorDate, intervalDays) {
+  const today = todayStr();
+  const periods = [];
+
+  // ── backward from anchor ──
+  // each backward period ends the day before the previous one's start
+  let bEnd = anchorDate;
+  for (let i = 0; i < 80; i++) {           // max ~3 years back at 14-day intervals
+    const bStart = addDays(bEnd, -(intervalDays - 1));
+    periods.unshift({ start:bStart, end:bEnd,
+      label:`${fmtDate(bStart)} – ${fmtDate(bEnd)}`, key:bStart });
+    bEnd = addDays(bStart, -1);
+    if (bStart < "2024-01-01") break;        // stop when far enough back
+  }
+
+  // ── forward from anchor ──
+  let fStart = addDays(anchorDate, 1);
+  for (let i = 0; i < 20; i++) {
+    const fEnd = addDays(fStart, intervalDays - 1);
+    periods.push({ start:fStart, end:fEnd,
+      label:`${fmtDate(fStart)} – ${fmtDate(fEnd)}`, key:fStart });
+    if (fStart > today && i >= 1) break;     // 1 future period then stop
+    fStart = addDays(fEnd, 1);
+  }
+
+  return periods;
+}
+
+function getCurrentPeriod(anchorDate, intervalDays) {
+  const today = todayStr();
+  const periods = buildPeriods(anchorDate, intervalDays);
+  return (
+    periods.find(p => today >= p.start && today <= p.end) ||
+    [...periods].reverse().find(p => p.end <= today) ||
+    periods[0]
+  );
+}
+
+function getPeriodEntries(entries, period) {
+  // Only gastos count for settlement
+  return entries.filter(e =>
+    e.type === "gasto" &&
+    e.entry_date >= period.start &&
+    e.entry_date <= period.end
+  );
+}
+
+// ============================================================
+// SETTLEMENT ENGINE
+// ============================================================
+// All gastos split 50/50. Balance = what you paid - your share.
+// Positive balance = overpaid = others owe you.
+function calcSettlement(periodGastos) {
+  const total = periodGastos.reduce((s,e) => s+e.amount, 0);
+  const share = total / 2;
+
+  let dPaid = 0, kPaid = 0;
+  periodGastos.forEach(e => {
+    if      (e.person === "Compartido") { dPaid += e.amount/2; kPaid += e.amount/2; }
+    else if (e.person === "Diego")      { dPaid += e.amount; }
+    else                                { kPaid += e.amount; }
+  });
+
+  const dBal = dPaid - share;
+  const kBal = kPaid - share;
+  let owes = null;
+  if (Math.abs(dBal) > 0.5) {
+    owes = dBal > 0
+      ? { from:"Kelly", to:"Diego", amount: parseFloat(Math.abs(dBal).toFixed(2)) }
+      : { from:"Diego", to:"Kelly", amount: parseFloat(Math.abs(dBal).toFixed(2)) };
+  }
+  return { total, share, dPaid, kPaid, dBal, kBal, owes };
+}
+
+// ============================================================
+// MONTH HELPERS
+// ============================================================
+const monthKey  = s => s.slice(0,7);
+const monthOf   = (entries, mk) => entries.filter(e => e.entry_date.startsWith(mk));
+const allMonths = entries => [...new Set(entries.map(e => monthKey(e.entry_date)))].sort().reverse();
+
+const fmt = n => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n);
+const fmtS = n => n>=1000000?`$${(n/1e6).toFixed(1)}M`:n>=1000?`$${(n/1000).toFixed(1)}k`:`$${Math.round(n)}`;
+const getCat = (id,cats) => cats.find(c=>c.id===id)||{name:"Otros",icon:"📦",color:"#94a3b8"};
+
+function useStorage(key, init) {
+  const [v,setV] = useState(()=>{ try{const s=localStorage.getItem(key);return s?JSON.parse(s):init;}catch{return init;} });
+  useEffect(()=>{ try{localStorage.setItem(key,JSON.stringify(v));}catch{} },[key,v]);
+  return [v,setV];
+}
+
+// ============================================================
+// STYLES
+// ============================================================
+const injectStyles = () => {
+  if (document.getElementById("ff4-styles")) return;
+  const s = document.createElement("style");
+  s.id = "ff4-styles";
+  s.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0b0d14;--bg2:#12151f;--bg3:#1a1e2e;--bg4:#222738;
+      --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);
+      --tx:#eef0f8;--mt:#6b7494;--mt2:#9ba3c4;
+      --ac:#4f7cff;--ac2:#7c5cfc;--ag:linear-gradient(135deg,#4f7cff,#7c5cfc);
+      --gn:#22c55e;--rd:#f43f5e;--yw:#fbbf24;
+      --r:16px;--rs:10px;
+    }
+    html,body,#root{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased}
+    .app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+    .hdr{padding:50px 18px 10px;display:flex;justify-content:space-between;align-items:flex-start}
+    .hdr-t{font-family:'Sora',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.5px}
+    .hdr-s{font-size:12px;color:var(--mt);margin-top:2px}
+    .body{flex:1;overflow-y:auto;padding:0 14px 100px}
+    .body::-webkit-scrollbar{display:none}
+
+    /* NAV */
+    .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+      background:rgba(18,21,31,.96);border-top:1px solid var(--bd);
+      display:flex;padding:6px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;backdrop-filter:blur(24px)}
+    .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;cursor:pointer}
+    .ni-ic{font-size:18px;transition:transform .2s}
+    .ni-lb{font-size:10px;font-weight:600;color:var(--mt);letter-spacing:.2px;transition:color .2s}
+    .ni.on .ni-lb{color:var(--ac)}.ni.on .ni-ic{transform:scale(1.15)}
+    .nav-add{width:48px;height:48px;background:var(--ag);border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:24px;color:#fff;cursor:pointer;
+      box-shadow:0 4px 18px rgba(79,124,255,.45);transition:transform .2s;margin-top:-16px}
+    .nav-add:active{transform:scale(.93)}
+
+    /* MONTH BAR */
+    .mbar{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;-webkit-overflow-scrolling:touch}
+    .mbar::-webkit-scrollbar{display:none}
+    .mc{padding:6px 14px;background:var(--bg2);border:1px solid var(--bd);border-radius:20px;
+      font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;color:var(--mt2);transition:all .15s}
+    .mc.on{background:rgba(79,124,255,.13);border-color:var(--ac);color:var(--ac)}
+
+    /* CARDS */
+    .card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:11px}
+    .csm{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);padding:13px}
+
+    /* HERO */
+    .hero{background:linear-gradient(145deg,#131d3a,#0c1220);
+      border:1px solid rgba(79,124,255,.18);border-radius:20px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+    .hero::after{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+      background:radial-gradient(circle,rgba(79,124,255,.12),transparent 70%);pointer-events:none}
+    .hl{font-size:11px;color:var(--mt);letter-spacing:.6px;text-transform:uppercase;margin-bottom:4px}
+    .ha{font-family:'Sora',sans-serif;font-size:34px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+    .hg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+    .hs{background:rgba(255,255,255,.04);border-radius:11px;padding:11px}
+    .hs-l{font-size:11px;color:var(--mt);margin-bottom:3px}
+    .hs-v{font-size:17px;font-weight:800;font-family:'Sora',sans-serif}
+
+    /* SETTLE CARD */
+    .sc{border-radius:20px;padding:20px;margin-bottom:12px;overflow:hidden}
+    .sc.bal{background:linear-gradient(145deg,#0d2010,#091408);border:1px solid rgba(34,197,94,.2)}
+    .sc.owe{background:linear-gradient(145deg,#1e1408,#120d04);border:1px solid rgba(251,191,36,.25)}
+    .sc.set{background:linear-gradient(145deg,#0d1a2e,#091020);border:1px solid rgba(79,124,255,.2)}
+    .sbdg{display:inline-flex;align-items:center;font-size:10px;font-weight:800;
+      padding:3px 10px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px}
+    .sbdg.ok{background:rgba(34,197,94,.15);color:var(--gn)}
+    .sbdg.pe{background:rgba(251,191,36,.15);color:var(--yw)}
+    .sbdg.dn{background:rgba(79,124,255,.15);color:var(--ac)}
+    .ss{font-family:'Sora',sans-serif;font-size:19px;font-weight:800;line-height:1.25;margin-bottom:3px}
+    .su{font-size:12px;color:var(--mt2)}
+
+    /* SECTION */
+    .sec{display:flex;justify-content:space-between;align-items:center;margin:16px 0 9px}
+    .sec-t{font-size:14px;font-weight:700}
+    .sec-a{font-size:13px;color:var(--ac);cursor:pointer}
+
+    /* ENTRY ROW */
+    .er{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg2);
+      border-radius:12px;margin-bottom:6px;border:1px solid var(--bd);cursor:pointer}
+    .er:active{background:var(--bg3)}
+    .ei{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .en{flex:1;min-width:0}
+    .enm{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .emt{font-size:11px;color:var(--mt);margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+    .eam{font-size:14px;font-weight:800;flex-shrink:0}
+    .eam.gasto{color:var(--rd)}.eam.ahorro{color:var(--gn)}.eam.retiro{color:var(--rd)}
+
+    /* BADGE */
+    .bdg{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+    .bdg.Diego{background:rgba(79,124,255,.15);color:#7aa3ff}
+    .bdg.Kelly{background:rgba(236,72,153,.15);color:#f472b6}
+    .bdg.Compartido{background:rgba(124,92,252,.15);color:#b197fc}
+
+    /* FORM */
+    .fg{margin-bottom:14px}
+    .fl{font-size:11px;font-weight:700;color:var(--mt);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;display:block}
+    .fi{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs);
+      padding:12px 14px;font-size:15px;color:var(--tx);font-family:inherit;outline:none;transition:border-color .2s;-webkit-appearance:none}
+    .fi:focus{border-color:var(--ac)}.fi::placeholder{color:var(--mt)}
+    .fam{font-family:'Sora',sans-serif;font-size:32px;font-weight:800;text-align:center;
+      background:transparent;border:none;border-bottom:2px solid var(--bd);border-radius:0;
+      padding:12px;width:100%;color:var(--tx);outline:none}
+    .fam:focus{border-bottom-color:var(--ac)}
+    .btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s}
+    .btnp{background:var(--ag);color:#fff;box-shadow:0 4px 14px rgba(79,124,255,.3)}
+    .btnp:active{transform:scale(.98)}
+    .btng{background:var(--bg3);color:var(--tx);border:1px solid var(--bd)}
+    .btns{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+    .btnr{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 4px 14px rgba(220,38,38,.3)}
+
+    /* TOGGLE */
+    .tgl{display:grid;grid-template-columns:1fr 1fr;background:var(--bg3);border-radius:var(--rs);padding:3px;gap:3px}
+    .tgb{padding:9px;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;
+      cursor:pointer;color:var(--mt);background:transparent;transition:all .2s}
+    .tgb.g{background:var(--rd);color:#fff}.tgb.a{background:var(--gn);color:#fff}
+
+    /* PERSON GRID */
+    .pg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+    .pb{padding:9px 4px;border:1px solid var(--bd);border-radius:10px;font-size:12px;font-weight:700;
+      font-family:inherit;cursor:pointer;background:var(--bg3);color:var(--mt);text-align:center;transition:all .2s}
+    .pb.on{border-color:var(--ac);color:var(--ac);background:rgba(79,124,255,.1)}
+
+    /* CAT CHIPS */
+    .cs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+    .cs::-webkit-scrollbar{display:none}
+    .cc{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px;
+      background:var(--bg3);border:1px solid var(--bd);border-radius:11px;
+      cursor:pointer;min-width:60px;flex-shrink:0;transition:all .2s}
+    .cc.on{border-color:var(--ac);background:rgba(79,124,255,.1)}
+    .cc-ic{font-size:19px}.cc-nm{font-size:10px;font-weight:600;color:var(--mt);white-space:nowrap}
+    .cc.on .cc-nm{color:var(--ac)}
+
+    /* MODAL */
+    .ovl{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+    .sht{background:var(--bg2);border-radius:22px 22px 0 0;padding:16px 16px calc(26px + env(safe-area-inset-bottom));
+      width:100%;max-width:430px;max-height:92dvh;overflow-y:auto;animation:up .25s ease}
+    @keyframes up{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+    .hdl{width:32px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 16px}
+    .sttl{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;margin-bottom:16px}
+
+    /* FILTER CHIPS */
+    .flt{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:9px}
+    .flt::-webkit-scrollbar{display:none}
+    .fc{padding:5px 12px;background:var(--bg2);border:1px solid var(--bd);border-radius:20px;
+      font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;color:var(--mt2);transition:all .15s}
+    .fc.on{background:rgba(79,124,255,.12);border-color:var(--ac);color:var(--ac)}
+
+    /* PROGRESS */
+    .pw{height:6px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;margin-top:6px}
+    .pb2{height:100%;border-radius:10px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+    .pw.tk{height:9px}
+
+    /* COMPARE GRID */
+    .cg{display:grid;grid-template-columns:1fr 28px 1fr;gap:6px;align-items:center;margin-bottom:12px}
+    .cp{background:var(--bg3);border-radius:13px;padding:13px;text-align:center;border:1px solid var(--bd)}
+
+    /* BUDGET ROW */
+    .bc{margin-bottom:12px}
+    .br{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+    .bcl{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px}
+
+    /* SAVINGS HERO */
+    .savh{background:linear-gradient(145deg,#0a1f10,#071209);border:1px solid rgba(34,197,94,.2);
+      border-radius:20px;padding:20px;margin-bottom:12px}
+
+    /* TREND CHART */
+    .tbar{display:flex;align-items:flex-end;gap:4px;height:90px;padding:0 2px}
+    .tc{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+    .tb{width:100%;border-radius:4px 4px 0 0;transition:height .5s ease;min-height:3px}
+    .tl{font-size:9px;color:var(--mt);font-weight:600;white-space:nowrap}
+
+    /* ACTION ROW */
+    .ar{display:flex;gap:6px;margin-top:5px;margin-bottom:7px}
+    .ab{flex:1;padding:7px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;
+      font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--mt2)}
+    .ab.del{color:var(--rd);border-color:rgba(244,63,94,.25)}
+
+    /* SETTLED LIST */
+    .sli{display:flex;justify-content:space-between;padding:11px 13px;
+      background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:6px}
+
+    /* PERIOD CHIP */
+    .pch{flex-shrink:0;cursor:pointer;padding:9px 13px;border-radius:12px;min-width:140px;transition:all .15s}
+
+    /* TOAST */
+    .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);
+      background:#1a2a1a;border:1px solid var(--gn);color:var(--gn);
+      padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;
+      animation:fio 2.5s forwards;white-space:nowrap;pointer-events:none}
+    @keyframes fio{0%{opacity:0;transform:translateX(-50%) translateY(-6px)}15%,75%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0}}
+
+    .empty{text-align:center;padding:40px 20px;color:var(--mt)}
+    .empty-ic{font-size:40px;margin-bottom:8px}
+    .div{height:1px;background:var(--bd);margin:10px 0}
+    select.fi option{background:#1a1e2e}
+  `;
+  document.head.appendChild(s);
+};
+
+// ============================================================
+// SMALL COMPONENTS
+// ============================================================
+function Toast({msg,onDone}){
+  useEffect(()=>{const t=setTimeout(onDone,2600);return()=>clearTimeout(t);},[]);
+  return <div className="toast">{msg}</div>;
+}
+function PBadge({p}){ return <span className={`bdg ${p}`}>{p}</span>; }
+function Prog({pct,color,thick}){
+  const bg = pct>=100?"var(--rd)":pct>=80?"var(--yw)":(color||"var(--ac)");
+  return <div className={`pw${thick?" tk":""}`}><div className="pb2" style={{width:`${Math.min(pct,100)}%`,background:bg}}/></div>;
+}
+function MonthBar({months,sel,onChange}){
+  return (
+    <div className="mbar">
+      <div className={`mc${sel==="all"?" on":""}`} onClick={()=>onChange("all")}>Todo</div>
+      {months.map(m=>(
+        <div key={m} className={`mc${sel===m?" on":""}`} onClick={()=>onChange(m)}>{fmtMonth(m)}</div>
+      ))}
+    </div>
+  );
+}
+function TrendChart({data,ck="gasto"}){
+  const max   = Math.max(...data.map(d=>d[ck]||0),1);
+  const color = ck==="gasto"?"var(--rd)":ck==="ahorro"?"var(--gn)":ck==="diego"?"#7aa3ff":"#f472b6";
+  return (
+    <div className="tbar">
+      {data.map((d,i)=>{
+        const v=d[ck]||0, pct=(v/max)*100;
+        return (
+          <div key={i} className="tc">
+            <div style={{fontSize:9,color:"var(--mt2)",fontWeight:700,marginBottom:2}}>{fmtS(v)}</div>
+            <div className="tb" style={{height:`${Math.max(pct,3)}%`,background:color,opacity:i===data.length-1?1:.6}}/>
+            <div className="tl">{d.label}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// ENTRY SHEET (add / edit)
+// ============================================================
+function EntrySheet({entry,onClose,onSave,cats}){
+  const isEdit = !!entry?.id;
+  const defDate = todayStr();                          // FIX: was new Date().toISOString() — UTC drift
+  const [type,  setType]   = useState(entry?.type||"gasto");
+  const [person,setPerson] = useState(entry?.person||"Diego");
+  const [amount,setAmount] = useState(entry?.amount?String(entry.amount):"");
+  const [catId, setCatId]  = useState(entry?.category_id||"");
+  const [note,  setNote]   = useState(entry?.note||"");
+  const [date,  setDate]   = useState(entry?.entry_date||defDate);
+
+  const save = () => {
+    const n=parseFloat(amount);
+    if(!n||n<=0||!catId) return;
+    onSave({...(entry||{}),id:entry?.id||`e${Date.now()}`,type,person,amount:n,category_id:catId,note,entry_date:date});
+    onClose();
+  };
+  return (
+    <div className="ovl" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="sht">
+        <div className="hdl"/>
+        <div className="sttl">{isEdit?"Editar":"Nuevo"} Movimiento</div>
+        <div className="fg">
+          <div className="tgl">
+            <button className={`tgb${type==="gasto"?" g":""}`} onClick={()=>setType("gasto")}>💸 Gasto</button>
+            <button className={`tgb${type==="ahorro"?" a":""}`} onClick={()=>setType("ahorro")}>💰 Ahorro</button>
+          </div>
+        </div>
+        <div className="fg" style={{textAlign:"center"}}>
+          <label className="fl">Valor</label>
+          <div style={{position:"relative"}}>
+            <span style={{position:"absolute",left:"calc(50% - 55px)",top:16,fontSize:19,color:"var(--mt)"}}>$</span>
+            <input className="fam" type="number" placeholder="0" value={amount} onChange={e=>setAmount(e.target.value)} inputMode="decimal"/>
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Persona</label>
+          <div className="pg">
+            {["Diego","Kelly","Compartido"].map(p=>(
+              <button key={p} className={`pb${person===p?" on":""}`} onClick={()=>setPerson(p)}>{p}</button>
+            ))}
+          </div>
+          {person==="Compartido"&&(
+            <div style={{fontSize:11,color:"var(--mt)",marginTop:6,padding:"6px 10px",background:"rgba(124,92,252,.08)",borderRadius:8,border:"1px solid rgba(124,92,252,.15)"}}>
+              ⚡ Se divide 50/50 en la liquidación
+            </div>
+          )}
+        </div>
+        <div className="fg">
+          <label className="fl">Categoría</label>
+          <div className="cs">
+            {cats.map(c=>(
+              <div key={c.id} className={`cc${catId===c.id?" on":""}`} onClick={()=>setCatId(c.id)}>
+                <span className="cc-ic">{c.icon}</span>
+                <span className="cc-nm">{c.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Fecha</label>
+          <input className="fi" type="date" value={date} onChange={e=>setDate(e.target.value)}/>
+        </div>
+        <div className="fg">
+          <label className="fl">Nota (opcional)</label>
+          <input className="fi" type="text" placeholder="Agrega una nota..." value={note} onChange={e=>setNote(e.target.value)}/>
+        </div>
+        <button className="btn btnp" onClick={save}>Guardar</button>
+        {isEdit&&<button className="btn btng" style={{marginTop:7}} onClick={onClose}>Cancelar</button>}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// WITHDRAW SHEET
+// ============================================================
+function WithdrawSheet({onClose,onSave,cats}){
+  const [person,setPerson] = useState("Diego");
+  const [amount,setAmount] = useState("");
+  const [catId, setCatId]  = useState("");
+  const [note,  setNote]   = useState("");
+  const [date,  setDate]   = useState(todayStr());   // FIX: was toISOString()
+  const save = () => {
+    const n=parseFloat(amount);
+    if(!n||n<=0||!catId) return;
+    onSave({id:`r${Date.now()}`,type:"retiro",person,amount:n,category_id:catId,note,entry_date:date});
+    onClose();
+  };
+  return (
+    <div className="ovl" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="sht">
+        <div className="hdl"/>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
+          <div style={{width:36,height:36,background:"rgba(244,63,94,.15)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>📤</div>
+          <div className="sttl" style={{margin:0}}>Retirar Ahorro</div>
+        </div>
+        <div style={{background:"rgba(244,63,94,.07)",border:"1px solid rgba(244,63,94,.2)",borderRadius:10,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#f87171"}}>
+          ⚠️ El retiro descuenta del saldo de ahorros. No afecta gastos ni presupuesto.
+        </div>
+        <div className="fg" style={{textAlign:"center"}}>
+          <label className="fl">Monto a retirar</label>
+          <div style={{position:"relative"}}>
+            <span style={{position:"absolute",left:"calc(50% - 55px)",top:16,fontSize:19,color:"var(--mt)"}}>$</span>
+            <input className="fam" style={{borderBottomColor:"var(--rd)"}} type="number" placeholder="0" value={amount} onChange={e=>setAmount(e.target.value)} inputMode="decimal"/>
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Persona</label>
+          <div className="pg">
+            {["Diego","Kelly","Compartido"].map(p=>(
+              <button key={p} className={`pb${person===p?" on":""}`} onClick={()=>setPerson(p)}>{p}</button>
+            ))}
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Categoría</label>
+          <div className="cs">
+            {cats.map(c=>(
+              <div key={c.id} className={`cc${catId===c.id?" on":""}`} onClick={()=>setCatId(c.id)}>
+                <span className="cc-ic">{c.icon}</span>
+                <span className="cc-nm">{c.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Fecha</label>
+          <input className="fi" type="date" value={date} onChange={e=>setDate(e.target.value)}/>
+        </div>
+        <div className="fg">
+          <label className="fl">Motivo (opcional)</label>
+          <input className="fi" type="text" placeholder="Ej: Emergencia, viaje..." value={note} onChange={e=>setNote(e.target.value)}/>
+        </div>
+        <button className="btn btnr" onClick={save}>📤 Confirmar Retiro</button>
+        <button className="btn btng" style={{marginTop:7}} onClick={onClose}>Cancelar</button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SETTLE SHEET
+// ============================================================
+function SettleSheet({entries,period,onClose,onSettle}){
+  const gastos = getPeriodEntries(entries, period);
+  const s      = calcSettlement(gastos);
+  return (
+    <div className="ovl" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="sht">
+        <div className="hdl"/>
+        <div className="sttl">Liquidar Periodo</div>
+        <div style={{fontSize:12,color:"var(--mt2)",marginBottom:14}}>{period.label}</div>
+
+        <div className="card" style={{marginBottom:10}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+            <span style={{fontSize:13,color:"var(--mt)"}}>Total del periodo</span>
+            <span style={{fontSize:16,fontWeight:800,fontFamily:"Sora"}}>{fmt(s.total)}</span>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+            <span style={{fontSize:13,color:"var(--mt)"}}>Le corresponde a cada uno</span>
+            <span style={{fontSize:14,fontWeight:700}}>{fmt(s.share)}</span>
+          </div>
+          <div className="div"/>
+          {[{l:"Diego pagó",paid:s.dPaid,bal:s.dBal},{l:"Kelly pagó",paid:s.kPaid,bal:s.kBal}].map(r=>(
+            <div key={r.l} style={{display:"flex",justifyContent:"space-between",marginBottom:7}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:600}}>{r.l}</div>
+                <div style={{fontSize:11,color:r.bal>0?"var(--gn)":r.bal<0?"var(--rd)":"var(--mt)"}}>
+                  {r.bal>0?`le deben ${fmt(r.bal)}`:r.bal<0?`debe ${fmt(Math.abs(r.bal))}`:"cuadrado ✓"}
+                </div>
+              </div>
+              <span style={{fontSize:15,fontWeight:800,fontFamily:"Sora"}}>{fmt(r.paid)}</span>
+            </div>
+          ))}
+        </div>
+
+        {s.owes?(
+          <div style={{background:"rgba(251,191,36,.08)",border:"1px solid rgba(251,191,36,.25)",borderRadius:13,padding:14,marginBottom:12,textAlign:"center"}}>
+            <div style={{fontSize:11,color:"var(--yw)",fontWeight:800,letterSpacing:.4,textTransform:"uppercase",marginBottom:7}}>Transferencia necesaria</div>
+            <div style={{fontFamily:"Sora",fontSize:19,fontWeight:800,marginBottom:4}}>
+              <PBadge p={s.owes.from}/> <span style={{color:"var(--mt)",margin:"0 6px"}}>→</span> <PBadge p={s.owes.to}/>
+            </div>
+            <div style={{fontFamily:"Sora",fontSize:26,fontWeight:800,color:"var(--yw)"}}>{fmt(s.owes.amount)}</div>
+          </div>
+        ):(
+          <div style={{background:"rgba(34,197,94,.08)",border:"1px solid rgba(34,197,94,.2)",borderRadius:13,padding:14,marginBottom:12,textAlign:"center"}}>
+            <div style={{fontSize:22}}>✅</div>
+            <div style={{fontFamily:"Sora",fontSize:15,fontWeight:700,marginTop:5}}>¡Están cuadrados!</div>
+          </div>
+        )}
+
+        <div style={{fontSize:11,color:"var(--mt)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4,marginBottom:8}}>
+          {gastos.length} gastos · {fmt(s.total)}
+        </div>
+        {gastos.map(e=>{
+          const cat=getCat(e.category_id,CATEGORIES);
+          const dS=e.person==="Compartido"?e.amount/2:e.person==="Diego"?e.amount:0;
+          const kS=e.person==="Compartido"?e.amount/2:e.person==="Kelly"?e.amount:0;
+          return (
+            <div key={e.id} style={{display:"flex",alignItems:"center",gap:9,padding:"8px 0",borderBottom:"1px solid var(--bd)"}}>
+              <span style={{fontSize:15}}>{cat.icon}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:600}}>{cat.name}{e.note?` · ${e.note}`:""}</div>
+                <div style={{fontSize:11,color:"var(--mt)",display:"flex",gap:5,flexWrap:"wrap",marginTop:1}}>
+                  <PBadge p={e.person}/><span>· {fmtDate(e.entry_date)}</span>
+                  {e.person==="Compartido"&&<span style={{color:"var(--mt2)"}}>D:{fmt(dS)} / K:{fmt(kS)}</span>}
+                </div>
+              </div>
+              <span style={{fontSize:12,fontWeight:700,color:"var(--rd)"}}>{fmt(e.amount)}</span>
+            </div>
+          );
+        })}
+
+        <button className="btn btns" style={{marginTop:14}} onClick={()=>{
+          onSettle({period,settle:s,date:todayStr()});    // FIX: was toISOString()
+          onClose();
+        }}>✓ Confirmar Liquidación</button>
+        <button className="btn btng" style={{marginTop:7}} onClick={onClose}>Cancelar</button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SETTLE CONFIG SHEET
+// ============================================================
+function SettleCfgSheet({cfg,onChange,onClose}){
+  const [anchor,  setAnchor]   = useState(cfg.anchorDate);
+  const [interval,setInterval] = useState(cfg.intervalDays);
+  const nextPreview = useMemo(()=>{
+    try { return addDays(anchor, Number(interval)); } catch { return null; }  // FIX: pure addDays not toISOString
+  },[anchor,interval]);
+  const save = () => { onChange({anchorDate:anchor,intervalDays:Number(interval)}); onClose(); };
+  return (
+    <div className="ovl" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="sht">
+        <div className="hdl"/>
+        <div className="sttl">⚙️ Configurar Liquidación</div>
+        <div className="fg">
+          <label className="fl">Última fecha liquidada (ancla)</label>
+          <input className="fi" type="date" value={anchor} onChange={e=>setAnchor(e.target.value)}/>
+          <div style={{fontSize:11,color:"var(--mt)",marginTop:5}}>
+            La app genera todos los periodos hacia atrás y adelante desde esta fecha.
+          </div>
+        </div>
+        <div className="fg">
+          <label className="fl">Intervalo (días)</label>
+          <input className="fi" type="number" value={interval} min={7} max={31} onChange={e=>setInterval(e.target.value)}/>
+          <div style={{fontSize:11,color:"var(--mt)",marginTop:5}}>
+            14 = cada dos viernes · 7 = semanal · 30 = mensual
+          </div>
+        </div>
+        {nextPreview&&(
+          <div style={{fontSize:12,color:"var(--ac)",background:"rgba(79,124,255,.08)",borderRadius:9,padding:"8px 12px",marginBottom:14}}>
+            📅 Próxima liquidación: <strong>{fmtDate(nextPreview)}</strong>
+          </div>
+        )}
+        <button className="btn btnp" onClick={save}>Guardar</button>
+        <button className="btn btng" style={{marginTop:7}} onClick={onClose}>Cancelar</button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function Dashboard({entries,budget,cats,settlements,cfg,onOpenSettle,sel,setSel,months}){
+  const period    = useMemo(()=>getCurrentPeriod(cfg.anchorDate,cfg.intervalDays),[cfg]);
+  const isSettled = settlements.some(s=>s.period.key===period.key);
+  const pGastos   = getPeriodEntries(entries,period);
+  const settle    = useMemo(()=>calcSettlement(pGastos),[entries,cfg]);
+
+  const mEntries = sel==="all"?entries:monthOf(entries,sel);
+  const gastos   = mEntries.filter(e=>e.type==="gasto");
+  const ahorros  = mEntries.filter(e=>e.type==="ahorro");
+  const tG = gastos.reduce((s,e)=>s+e.amount,0);
+  const tA = ahorros.reduce((s,e)=>s+e.amount,0);
+  const avail = budget.total-tG;
+  const bPct  = budget.total>0?(tG/budget.total)*100:0;
+  const label = sel==="all"?"todos los meses":fmtMonth(sel);
+
+  const byP = ["Diego","Kelly"].map(p=>({
+    p,
+    g: gastos.reduce((s,e)=>e.person===p?s+e.amount:e.person==="Compartido"?s+e.amount/2:s,0),
+    a: ahorros.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0),
+  }));
+
+  const topCats = cats.map(c=>({
+    ...c,
+    total: gastos.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0),
+    bud:   budget.categories[c.id]||0,
+  })).filter(c=>c.total>0).sort((a,b)=>b.total-a.total).slice(0,5);
+
+  return (
+    <div>
+      <MonthBar months={months} sel={sel} onChange={setSel}/>
+
+      {/* SETTLEMENT STATUS */}
+      <div className={`sc ${isSettled?"set":settle.owes?"owe":"bal"}`}>
+        <div className={`sbdg ${isSettled?"dn":settle.owes?"pe":"ok"}`}>
+          {isSettled?"✓ Liquidado":settle.owes?"⚡ Pendiente":"✓ Cuadrados"}
+        </div>
+        <div className="ss">
+          {isSettled?"Periodo cerrado":settle.owes?`${settle.owes.from} debe ${fmt(settle.owes.amount)}`:"¡Están al día!"}
+        </div>
+        <div className="su">
+          {isSettled?"Siguiente periodo activo"
+            :settle.owes?`a ${settle.owes.to} · ${period.label}`
+            :`${period.label} · ${fmt(settle.total)} en gastos`}
+        </div>
+        {!isSettled&&(
+          <button onClick={onOpenSettle} style={{marginTop:12,padding:"8px 16px",background:"rgba(255,255,255,.07)",
+            border:"1px solid var(--bd2)",borderRadius:9,color:"var(--tx)",fontSize:12,fontWeight:700,fontFamily:"inherit",cursor:"pointer"}}>
+            Ver detalle y liquidar →
+          </button>
+        )}
+      </div>
+
+      {/* BUDGET HERO */}
+      <div className="hero">
+        <div className="hl">{label}</div>
+        <div className="ha" style={{color:avail<0?"var(--rd)":"var(--tx)"}}>{fmt(avail)}</div>
+        <div style={{fontSize:11,color:"var(--mt)",marginTop:3}}>disponible de {fmt(budget.total)}</div>
+        <Prog pct={bPct} thick/>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:5,fontSize:11,color:"var(--mt)"}}>
+          <span>Gastado {fmt(tG)}</span>
+          <span style={{color:bPct>=100?"var(--rd)":bPct>=80?"var(--yw)":"var(--mt)"}}>
+            {bPct>=100?"🔴 Límite":bPct>=80?"⚠️ Cuidado":`${bPct.toFixed(0)}%`}
+          </span>
+        </div>
+        <div className="hg">
+          <div className="hs"><div className="hs-l">💸 Gastado</div><div className="hs-v" style={{color:"var(--rd)"}}>{fmt(tG)}</div></div>
+          <div className="hs"><div className="hs-l">💰 Ahorrado</div><div className="hs-v" style={{color:"var(--gn)"}}>{fmt(tA)}</div></div>
+        </div>
+      </div>
+
+      {/* DIEGO VS KELLY */}
+      <div className="sec"><span className="sec-t">Diego vs Kelly</span><span style={{fontSize:11,color:"var(--mt)"}}>{label}</span></div>
+      <div className="cg">
+        {byP.map(x=>(
+          <div key={x.p} className="cp">
+            <div style={{fontSize:10,color:"var(--mt)",fontWeight:700,letterSpacing:.3,textTransform:"uppercase",marginBottom:5}}>{x.p}</div>
+            <div style={{fontFamily:"Sora",fontSize:20,fontWeight:800,color:"var(--rd)"}}>{fmt(x.g)}</div>
+            <div style={{fontSize:11,color:"var(--mt)",marginTop:2}}>gastos</div>
+            <div style={{fontFamily:"Sora",fontSize:15,fontWeight:800,color:"var(--gn)",marginTop:6}}>{fmt(x.a)}</div>
+            <div style={{fontSize:11,color:"var(--mt)",marginTop:2}}>ahorros</div>
+          </div>
+        ))}
+        <div style={{textAlign:"center",fontSize:12,fontWeight:700,color:"var(--mt)"}}>VS</div>
+      </div>
+
+      {/* TOP CATS */}
+      {topCats.length>0&&<>
+        <div className="sec"><span className="sec-t">Top Categorías</span></div>
+        <div className="card">
+          {topCats.map(c=>{
+            const pct=c.bud>0?(c.total/c.bud)*100:0;
+            return (
+              <div key={c.id} className="bc">
+                <div className="br">
+                  <span className="bcl"><span>{c.icon}</span>{c.name}</span>
+                  <span style={{fontSize:12,color:"var(--mt2)"}}>{fmt(c.total)}{c.bud>0?` / ${fmt(c.bud)}`:""}</span>
+                </div>
+                {c.bud>0&&<Prog pct={pct} color={c.color}/>}
+              </div>
+            );
+          })}
+        </div>
+      </>}
+
+      {/* SAVINGS MINI */}
+      <div className="sec"><span className="sec-t">Ahorros</span></div>
+      <div className="card" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,textAlign:"center"}}>
+        {["Diego","Kelly","Compartido"].map(p=>{
+          const t=ahorros.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0);
+          return <div key={p}><PBadge p={p}/><div style={{fontFamily:"Sora",fontSize:16,fontWeight:800,color:"var(--gn)",marginTop:5}}>{fmt(t)}</div></div>;
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// TRENDS
+// ============================================================
+function Trends({entries,cats,budget,sel,setSel,months}){
+  const [view,setView] = useState("gastos");
+
+  const series = useMemo(()=>{
+    return [...months].slice(0,6).reverse().map(m=>{
+      const me=monthOf(entries,m);
+      const g=me.filter(e=>e.type==="gasto");
+      const a=me.filter(e=>e.type==="ahorro");
+      return {
+        month:m, label:fmtMonth(m),
+        gasto:  g.reduce((s,e)=>s+e.amount,0),
+        ahorro: a.reduce((s,e)=>s+e.amount,0),
+        diego:  g.reduce((s,e)=>e.person==="Compartido"?s+e.amount/2:e.person==="Diego"?s+e.amount:s,0),
+        kelly:  g.reduce((s,e)=>e.person==="Compartido"?s+e.amount/2:e.person==="Kelly"?s+e.amount:s,0),
+      };
+    });
+  },[entries,months]);
+
+  const mE   = sel==="all"?entries:monthOf(entries,sel);
+  const gastos = mE.filter(e=>e.type==="gasto");
+  const tG   = gastos.reduce((s,e)=>s+e.amount,0);
+  const bPct = budget.total>0?(tG/budget.total)*100:0;
+
+  const catData = cats.map(c=>({
+    ...c,
+    total: gastos.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0),
+    bud:   budget.categories[c.id]||0,
+  })).filter(c=>c.total>0||c.bud>0).sort((a,b)=>b.total-a.total);
+  const cMax = Math.max(...catData.map(c=>Math.max(c.total,c.bud)),1);
+
+  const avg  = k => series.length>0?series.reduce((s,d)=>s+(d[k]||0),0)/series.length:0;
+  const last = series[series.length-1];
+  const prev = series[series.length-2];
+  const dPct = prev&&prev.gasto>0?((last?.gasto-prev.gasto)/prev.gasto*100):0;
+
+  return (
+    <div>
+      <MonthBar months={months} sel={sel} onChange={setSel}/>
+
+      {/* KPIs */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:12}}>
+        <div className="csm">
+          <div style={{fontSize:11,color:"var(--mt)",marginBottom:4}}>Gasto promedio/mes</div>
+          <div style={{fontFamily:"Sora",fontSize:20,fontWeight:800,color:"var(--rd)"}}>{fmt(avg("gasto"))}</div>
+          {prev&&<div style={{fontSize:11,marginTop:3,color:dPct>0?"var(--rd)":"var(--gn)"}}>{dPct>0?"↑":"↓"} {Math.abs(dPct).toFixed(0)}% vs anterior</div>}
+        </div>
+        <div className="csm">
+          <div style={{fontSize:11,color:"var(--mt)",marginBottom:4}}>Ahorro promedio/mes</div>
+          <div style={{fontFamily:"Sora",fontSize:20,fontWeight:800,color:"var(--gn)"}}>{fmt(avg("ahorro"))}</div>
+          <div style={{fontSize:11,color:"var(--mt)",marginTop:3}}>{series.length} meses</div>
+        </div>
+      </div>
+
+      {/* CHART */}
+      <div className="card">
+        <div style={{display:"flex",gap:4,marginBottom:14}}>
+          {[["gastos","💸 Gastos"],["ahorros","💰 Ahorros"],["personas","👤 Personas"]].map(([k,l])=>(
+            <button key={k} onClick={()=>setView(k)} style={{
+              flex:1,padding:"7px 4px",border:view===k?"1px solid var(--ac)":"1px solid var(--bd)",
+              borderRadius:9,background:view===k?"rgba(79,124,255,.12)":"var(--bg3)",
+              color:view===k?"var(--ac)":"var(--mt)",fontFamily:"inherit",fontSize:11,fontWeight:700,cursor:"pointer"
+            }}>{l}</button>
+          ))}
+        </div>
+        <div style={{fontSize:11,color:"var(--mt)",marginBottom:8,fontWeight:600,textTransform:"uppercase",letterSpacing:.4}}>Últimos {series.length} meses</div>
+        {view==="gastos"  && <TrendChart data={series} ck="gasto"/>}
+        {view==="ahorros" && <TrendChart data={series} ck="ahorro"/>}
+        {view==="personas"&&(
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:10,height:10,borderRadius:2,background:"#7aa3ff"}}/><span style={{fontSize:11,color:"var(--mt2)",fontWeight:600}}>Diego (50% compartidos)</span></div>
+            <TrendChart data={series} ck="diego"/>
+            <div style={{display:"flex",alignItems:"center",gap:6,margin:"14px 0 8px"}}><div style={{width:10,height:10,borderRadius:2,background:"#f472b6"}}/><span style={{fontSize:11,color:"var(--mt2)",fontWeight:600}}>Kelly (50% compartidos)</span></div>
+            <TrendChart data={series} ck="kelly"/>
+          </div>
+        )}
+      </div>
+
+      {/* MONTH TABLE */}
+      <div className="sec"><span className="sec-t">Resumen por Mes</span></div>
+      <div className="card">
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:4,marginBottom:9,paddingBottom:8,borderBottom:"1px solid var(--bd)"}}>
+          {["Mes","Gastos","Ahorros","Neto"].map(h=>(
+            <div key={h} style={{fontSize:10,fontWeight:800,color:"var(--mt)",textTransform:"uppercase",letterSpacing:.3}}>{h}</div>
+          ))}
+        </div>
+        {[...series].reverse().map(d=>(
+          <div key={d.month} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:4,marginBottom:8}}>
+            <div style={{fontSize:12,fontWeight:700}}>{d.label}</div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--rd)"}}>{fmtS(d.gasto)}</div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--gn)"}}>{fmtS(d.ahorro)}</div>
+            <div style={{fontSize:12,fontWeight:700,color:d.ahorro>d.gasto?"var(--gn)":"var(--mt2)"}}>{fmtS(d.ahorro-d.gasto)}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* BUDGET VS ACTUAL */}
+      <div className="sec">
+        <span className="sec-t">Gasto vs Presupuesto</span>
+        <span style={{fontSize:11,color:"var(--mt)"}}>{sel==="all"?"todo":fmtMonth(sel)}</span>
+      </div>
+      <div className="card" style={{marginBottom:10}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <span style={{fontSize:13,fontWeight:700}}>Total del mes</span>
+          <span style={{fontSize:12,color:"var(--mt2)"}}>{fmt(tG)} / {fmt(budget.total)}</span>
+        </div>
+        <Prog pct={bPct} thick/>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:5,fontSize:11}}>
+          <span style={{color:"var(--mt)"}}>Disponible: {fmt(budget.total-tG)}</span>
+          <span style={{color:bPct>=100?"var(--rd)":bPct>=80?"var(--yw)":"var(--gn)",fontWeight:700}}>
+            {bPct>=100?"🔴 Superado":bPct>=80?`⚠️ ${bPct.toFixed(0)}%`:`✓ ${bPct.toFixed(0)}%`}
+          </span>
+        </div>
+      </div>
+      {catData.length===0&&<div className="empty"><div className="empty-ic">📊</div><div>Sin datos</div></div>}
+      {catData.map(c=>{
+        const pct=c.bud>0?(c.total/c.bud)*100:0;
+        return (
+          <div key={c.id} className="card" style={{marginBottom:8}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+              <span style={{fontSize:13,fontWeight:700,display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:18}}>{c.icon}</span>{c.name}
+              </span>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:13,fontWeight:800,color:pct>=100?"var(--rd)":pct>=80?"var(--yw)":"var(--tx)"}}>{fmt(c.total)}</div>
+                {c.bud>0&&<div style={{fontSize:10,color:"var(--mt)"}}>de {fmt(c.bud)}</div>}
+              </div>
+            </div>
+            <div style={{position:"relative",height:8,background:"rgba(255,255,255,.06)",borderRadius:10,overflow:"hidden"}}>
+              {c.bud>0&&<div style={{position:"absolute",left:`${Math.min((c.bud/cMax)*100,100)}%`,top:0,width:2,height:"100%",background:"rgba(255,255,255,.25)",zIndex:2}}/>}
+              <div style={{height:"100%",width:`${Math.min((c.total/cMax)*100,100)}%`,
+                background:pct>=100?"var(--rd)":pct>=80?"var(--yw)":c.color,borderRadius:10,transition:"width .6s ease"}}/>
+            </div>
+            {c.bud>0&&(
+              <div style={{display:"flex",justifyContent:"space-between",marginTop:4,fontSize:10,color:"var(--mt)"}}>
+                <span>{pct.toFixed(0)}% usado</span>
+                <span style={{color:c.bud>=c.total?"var(--gn)":"var(--rd)"}}>
+                  {c.bud>=c.total?`${fmt(c.bud-c.total)} disponible`:`${fmt(c.total-c.bud)} excedido`}
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// LIQUIDACIONES — with period selector
+// ============================================================
+function Liquidaciones({entries,settlements,cfg,setCfg,onOpenSettle,onRemoveSett}){
+  const [showCfg, setShowCfg] = useState(false);
+  const today = todayStr();
+
+  const allPeriods = useMemo(()=>buildPeriods(cfg.anchorDate,cfg.intervalDays),[cfg]);
+  const currentP   = useMemo(()=>getCurrentPeriod(cfg.anchorDate,cfg.intervalDays),[cfg]);
+
+  // FIX: Show ALL periods that have gastos entries + current period + 1 future
+  // Previously filtered out periods with entries outside a "recent" window — that's why gastos weren't showing
+  const relevant = useMemo(()=>{
+    return allPeriods.filter(p=>{
+      const hasData    = entries.some(e=>e.type==="gasto"&&e.entry_date>=p.start&&e.entry_date<=p.end);
+      const isCurrent  = p.key===currentP.key;
+      const isNearFuture = p.start<=addDays(today,cfg.intervalDays*2)&&p.start>today;
+      return hasData||isCurrent||isNearFuture;
+    });
+  },[allPeriods,entries,currentP,cfg,today]);
+
+  const [selKey, setSelKey] = useState(()=>currentP.key);
+
+  useEffect(()=>setSelKey(getCurrentPeriod(cfg.anchorDate,cfg.intervalDays).key),[cfg]);
+
+  const selPeriod  = allPeriods.find(p=>p.key===selKey)||currentP;
+  const isSettled  = settlements.some(s=>s.period.key===selPeriod.key);
+  const pGastos    = getPeriodEntries(entries,selPeriod);
+  const settle     = useMemo(()=>calcSettlement(pGastos),[entries,selPeriod]);
+  const isFuture   = selPeriod.start>today;
+  const nextDate   = addDays(currentP.end,1);
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+        <div>
+          <div style={{fontSize:13,fontWeight:700}}>Cada {cfg.intervalDays} días</div>
+          <div style={{fontSize:11,color:"var(--mt)"}}>Próxima: {fmtDate(nextDate)}</div>
+        </div>
+        <button onClick={()=>setShowCfg(true)} style={{padding:"7px 13px",background:"var(--bg3)",border:"1px solid var(--bd2)",
+          borderRadius:9,color:"var(--mt2)",fontSize:12,fontWeight:700,fontFamily:"inherit",cursor:"pointer"}}>
+          ⚙️ Configurar
+        </button>
+      </div>
+
+      {/* PERIOD SELECTOR */}
+      <div className="sec"><span className="sec-t">Seleccionar Periodo</span></div>
+      {relevant.length===0&&<div className="empty"><div className="empty-ic">📅</div><div>Sin periodos con datos</div></div>}
+      <div style={{display:"flex",gap:7,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch",marginBottom:14}}>
+        {[...relevant].reverse().map(p=>{
+          const pSett = settlements.some(s=>s.period.key===p.key);
+          const pCurr = p.key===currentP.key;
+          const pSettle = calcSettlement(getPeriodEntries(entries,p));
+          const sel = p.key===selKey;
+          return (
+            <div key={p.key} className="pch" onClick={()=>setSelKey(p.key)} style={{
+              background: sel?"rgba(79,124,255,.15)":"var(--bg2)",
+              border: sel?"1px solid var(--ac)":"1px solid var(--bd)",
+            }}>
+              <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
+                <div style={{width:7,height:7,borderRadius:"50%",flexShrink:0,
+                  background:pSett?"var(--gn)":pCurr?"var(--yw)":"var(--mt)"}}/>
+                <span style={{fontSize:10,fontWeight:700,color:pSett?"var(--gn)":pCurr?"var(--yw)":"var(--mt)",textTransform:"uppercase",letterSpacing:.3}}>
+                  {pSett?"Liquidado":pCurr?"Actual":"Pasado"}
+                </span>
+              </div>
+              <div style={{fontSize:12,fontWeight:700,color:sel?"var(--ac)":"var(--tx)"}}>{p.label}</div>
+              {!pSett&&pSettle.total>0&&(
+                <div style={{fontSize:11,marginTop:3,color:pSettle.owes?"var(--yw)":"var(--gn)"}}>
+                  {pSettle.owes?`${pSettle.owes.from} debe ${fmt(pSettle.owes.amount)}`:"Cuadrados ✓"}
+                </div>
+              )}
+              {pSett&&<div style={{fontSize:11,marginTop:3,color:"var(--mt)"}}>{fmt(pSettle.total)}</div>}
+              {!pSett&&pSettle.total===0&&<div style={{fontSize:11,marginTop:3,color:"var(--mt)"}}>Sin gastos</div>}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* SELECTED DETAIL */}
+      <div className="sec"><span className="sec-t">Detalle</span><span style={{fontSize:11,color:"var(--mt)"}}>{selPeriod.label}</span></div>
+
+      {isFuture?(
+        <div style={{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:14,padding:20,textAlign:"center"}}>
+          <div style={{fontSize:28,marginBottom:8}}>📅</div>
+          <div style={{fontFamily:"Sora",fontSize:14,fontWeight:700}}>Periodo futuro</div>
+          <div style={{fontSize:12,color:"var(--mt)",marginTop:4}}>Comienza el {fmtDate(selPeriod.start)}</div>
+        </div>
+      ):isSettled?(
+        <div>
+          <div style={{background:"rgba(34,197,94,.06)",border:"1px solid rgba(34,197,94,.2)",borderRadius:14,padding:16,marginBottom:12,textAlign:"center"}}>
+            <div style={{fontSize:26,marginBottom:5}}>✅</div>
+            <div style={{fontFamily:"Sora",fontSize:14,fontWeight:700}}>Periodo liquidado</div>
+            {(()=>{
+              const rec=settlements.find(s=>s.period.key===selPeriod.key);
+              return rec?(<div style={{fontSize:12,color:"var(--mt)",marginTop:4}}>
+                {rec.settle.owes?`${rec.settle.owes.from} → ${rec.settle.owes.to} · ${fmt(rec.settle.owes.amount)}`:"Sin transferencia · cuadrados"}
+                <div style={{marginTop:2}}>Liquidado el {fmtDate(rec.date)}</div>
+              </div>):null;
+            })()}
+          </div>
+          <PeriodBreakdown gastos={pGastos} settle={settle}/>
+        </div>
+      ):(
+        <div>
+          <div className={`sc ${settle.owes?"owe":"bal"}`} style={{marginBottom:12}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div>
+                <div className={`sbdg ${settle.owes?"pe":"ok"}`}>{settle.owes?"⚡ Pendiente":"✓ Cuadrados"}</div>
+                <div className="ss" style={{fontSize:17}}>{settle.owes?`${settle.owes.from} debe ${fmt(settle.owes.amount)}`:"¡Están al día!"}</div>
+                {settle.owes&&<div className="su">→ a {settle.owes.to}</div>}
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:10,color:"var(--mt)"}}>Total periodo</div>
+                <div style={{fontFamily:"Sora",fontSize:19,fontWeight:800}}>{fmt(settle.total)}</div>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginTop:12}}>
+              {[{p:"Diego",paid:settle.dPaid,bal:settle.dBal},{p:"Kelly",paid:settle.kPaid,bal:settle.kBal}].map(r=>(
+                <div key={r.p} style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:10}}>
+                  <div style={{fontSize:11,color:"var(--mt)",marginBottom:3}}><PBadge p={r.p}/></div>
+                  <div style={{fontFamily:"Sora",fontSize:15,fontWeight:800}}>{fmt(r.paid)}</div>
+                  <div style={{fontSize:10,marginTop:2,color:r.bal>0?"var(--gn)":r.bal<0?"var(--rd)":"var(--mt)"}}>
+                    {r.bal>0?`le deben ${fmt(r.bal)}`:r.bal<0?`debe ${fmt(Math.abs(r.bal))}`:"cuadrado ✓"}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {settle.total>0&&(
+              <button onClick={()=>onOpenSettle(selPeriod)} className="btn btns" style={{marginTop:12}}>Liquidar Periodo →</button>
+            )}
+            {settle.total===0&&<div style={{fontSize:12,color:"var(--mt)",marginTop:12,textAlign:"center"}}>Sin gastos en este periodo</div>}
+          </div>
+          <PeriodBreakdown gastos={pGastos} settle={settle}/>
+        </div>
+      )}
+
+      {/* HISTORY */}
+      <div className="sec"><span className="sec-t">Historial</span></div>
+      {settlements.length===0&&<div className="empty"><div className="empty-ic">📋</div><div>Sin liquidaciones aún</div></div>}
+      {[...settlements].reverse().map((s,i)=>(
+        <div key={i} className="sli">
+          <div>
+            <div style={{fontSize:13,fontWeight:700}}>{s.period.label}</div>
+            <div style={{fontSize:11,color:"var(--mt)",marginTop:2}}>
+              {s.settle.owes?`${s.settle.owes.from} → ${s.settle.owes.to} · ${fmt(s.settle.owes.amount)}`:"Sin transferencia · cuadrados"}
+            </div>
+            <div style={{fontSize:10,color:"var(--mt)",marginTop:2}}>Liquidado el {fmtDate(s.date)}</div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:14,fontWeight:800,color:"var(--ac)"}}>{fmt(s.settle.total)}</div>
+            <button onClick={()=>onRemoveSett(settlements.length-1-i)} style={{fontSize:10,color:"var(--rd)",background:"none",border:"none",cursor:"pointer",marginTop:5,display:"block"}}>eliminar</button>
+          </div>
+        </div>
+      ))}
+      {showCfg&&<SettleCfgSheet cfg={cfg} onChange={setCfg} onClose={()=>setShowCfg(false)}/>}
+    </div>
+  );
+}
+
+function PeriodBreakdown({gastos,settle}){
+  if(gastos.length===0) return <div className="empty" style={{paddingTop:16}}><div className="empty-ic">🧾</div><div>Sin gastos en este periodo</div></div>;
+  return (
+    <div className="card">
+      <div style={{fontSize:11,color:"var(--mt)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4,marginBottom:10}}>
+        {gastos.length} gastos · {fmt(settle.total)}
+      </div>
+      {gastos.map(e=>{
+        const cat=getCat(e.category_id,CATEGORIES);
+        const dS=e.person==="Compartido"?e.amount/2:e.person==="Diego"?e.amount:0;
+        const kS=e.person==="Compartido"?e.amount/2:e.person==="Kelly"?e.amount:0;
+        return (
+          <div key={e.id} style={{display:"flex",alignItems:"center",gap:9,padding:"8px 0",borderBottom:"1px solid var(--bd)"}}>
+            <span style={{fontSize:15}}>{cat.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:600}}>{cat.name}{e.note?` · ${e.note}`:""}</div>
+              <div style={{fontSize:11,color:"var(--mt)",marginTop:1,display:"flex",gap:5,flexWrap:"wrap"}}>
+                <PBadge p={e.person}/><span>· {fmtDate(e.entry_date)}</span>
+                {e.person==="Compartido"&&<span style={{color:"var(--mt2)"}}>D:{fmt(dS)} / K:{fmt(kS)}</span>}
+              </div>
+            </div>
+            <span style={{fontSize:12,fontWeight:700,color:"var(--rd)"}}>{fmt(e.amount)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function History({entries,cats,onEdit,onDelete,sel,setSel,months}){
+  const [fP,setFP]=useState("Todos");
+  const [fT,setFT]=useState("Todos");
+  const [fC,setFC]=useState("Todas");
+  const [exp,setExp]=useState(null);
+
+  const filtered = useMemo(()=>entries.filter(e=>{
+    if(fP!=="Todos"&&e.person!==fP) return false;
+    // FIX: "Todos" must include "retiro" type too — was hiding retiros
+    if(fT==="gasto"&&e.type!=="gasto") return false;
+    if(fT==="ahorro"&&!["ahorro","retiro"].includes(e.type)) return false;
+    if(fC!=="Todas"&&e.category_id!==fC) return false;
+    if(sel!=="all"&&!e.entry_date.startsWith(sel)) return false;
+    return true;
+  }).sort((a,b)=>b.entry_date.localeCompare(a.entry_date)),[entries,fP,fT,fC,sel]);
+
+  return (
+    <div>
+      <MonthBar months={months} sel={sel} onChange={setSel}/>
+      <div className="flt">
+        {["Todos","Diego","Kelly","Compartido"].map(p=>(
+          <div key={p} className={`fc${fP===p?" on":""}`} onClick={()=>setFP(p)}>{p}</div>
+        ))}
+      </div>
+      <div className="flt">
+        {[["Todos","Todos"],["gasto","💸 Gastos"],["ahorro","💰 Ahorros/Retiros"]].map(([k,l])=>(
+          <div key={k} className={`fc${fT===k?" on":""}`} onClick={()=>setFT(k)}>{l}</div>
+        ))}
+      </div>
+      <div className="flt">
+        <div className={`fc${fC==="Todas"?" on":""}`} onClick={()=>setFC("Todas")}>Todas</div>
+        {cats.map(c=><div key={c.id} className={`fc${fC===c.id?" on":""}`} onClick={()=>setFC(c.id)}>{c.icon} {c.name}</div>)}
+      </div>
+      <div style={{fontSize:12,color:"var(--mt)",marginBottom:10,fontWeight:600}}>{filtered.length} movimientos</div>
+      {filtered.length===0&&<div className="empty"><div className="empty-ic">🔍</div><div>Sin movimientos</div></div>}
+      {filtered.map(e=>{
+        const cat=getCat(e.category_id,cats);
+        const isRet=e.type==="retiro";
+        const open=exp===e.id;
+        return (
+          <div key={e.id}>
+            <div className="er" onClick={()=>setExp(open?null:e.id)}>
+              <div className="ei" style={{background:isRet?"rgba(244,63,94,.12)":cat.color+"22"}}>{cat.icon}</div>
+              <div className="en">
+                <div className="enm">
+                  {cat.name}
+                  {isRet&&<span style={{fontSize:10,background:"rgba(244,63,94,.15)",color:"#f87171",borderRadius:5,padding:"1px 5px",fontWeight:700,marginLeft:5}}>RETIRO</span>}
+                  {e.note?` · ${e.note}`:""}
+                </div>
+                <div className="emt">
+                  <PBadge p={e.person}/>
+                  {e.person==="Compartido"&&<span style={{fontSize:10,color:"var(--mt)"}}>50/50</span>}
+                  <span>· {fmtDate(e.entry_date)}</span>
+                </div>
+              </div>
+              <div className={`eam ${e.type}`}>{e.type==="gasto"?"-":"+"}{fmt(e.amount)}</div>
+            </div>
+            {open&&(
+              <div className="ar">
+                {!isRet&&<button className="ab" onClick={()=>{onEdit(e);setExp(null)}}>✏️ Editar</button>}
+                <button className="ab del" onClick={()=>{onDelete(e.id);setExp(null)}}>🗑️ Eliminar</button>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// SAVINGS
+// ============================================================
+function Savings({entries,cats,onSaveEntry,sel,setSel,months}){
+  const [showW, setShowW] = useState(false);
+  const [expId, setExpId] = useState(null);
+  const [onlyCat,setOnlyCat] = useState("Todas");
+
+  const allSav = entries.filter(e=>e.type==="ahorro");
+  const allRet = entries.filter(e=>e.type==="retiro");
+  const net    = allSav.reduce((s,e)=>s+e.amount,0)-allRet.reduce((s,e)=>s+e.amount,0);
+
+  const mE     = sel==="all"?entries:monthOf(entries,sel);
+  const mSav   = mE.filter(e=>e.type==="ahorro");
+  const mRet   = mE.filter(e=>e.type==="retiro");
+
+  const byP = ["Diego","Kelly","Compartido"].map(p=>({
+    p,
+    saved:    allSav.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0),
+    withdrew: allRet.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0),
+    net:      allSav.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0)-allRet.filter(e=>e.person===p).reduce((s,e)=>s+e.amount,0),
+  }));
+
+  const byCat = cats.map(c=>({
+    ...c,
+    saved:    allSav.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0),
+    withdrew: allRet.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0),
+    net:      allSav.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0)-allRet.filter(e=>e.category_id===c.id).reduce((s,e)=>s+e.amount,0),
+  })).filter(c=>c.saved>0||c.withdrew>0).sort((a,b)=>b.net-a.net);
+  const cMax=Math.max(...byCat.map(c=>c.saved),1);
+
+  const activity=[...mSav,...mRet]
+    .filter(e=>onlyCat==="Todas"||e.category_id===onlyCat)
+    .sort((a,b)=>b.entry_date.localeCompare(a.entry_date));
+
+  return (
+    <div>
+      <MonthBar months={months} sel={sel} onChange={setSel}/>
+      <div className="savh">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div className="hl">Saldo Total Ahorrado</div>
+            <div style={{fontFamily:"Sora",fontSize:34,fontWeight:800,color:net>=0?"var(--gn)":"var(--rd)",lineHeight:1}}>{fmt(net)}</div>
+            <div style={{fontSize:11,color:"var(--mt)",marginTop:4}}>
+              {fmt(allSav.reduce((s,e)=>s+e.amount,0))} ahorrado · {fmt(allRet.reduce((s,e)=>s+e.amount,0))} retirado
+            </div>
+          </div>
+          <button onClick={()=>setShowW(true)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+            background:"rgba(244,63,94,.12)",border:"1px solid rgba(244,63,94,.25)",
+            borderRadius:12,padding:"10px 14px",cursor:"pointer",flexShrink:0}}>
+            <span style={{fontSize:20}}>📤</span>
+            <span style={{fontSize:10,fontWeight:700,color:"#f87171"}}>Retirar</span>
+          </button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginTop:14}}>
+          {byP.map(x=>(
+            <div key={x.p} style={{textAlign:"center",background:"rgba(255,255,255,.04)",borderRadius:10,padding:9}}>
+              <PBadge p={x.p}/>
+              <div style={{fontFamily:"Sora",fontSize:16,fontWeight:800,color:x.net>=0?"var(--gn)":"var(--rd)",marginTop:5}}>{fmt(x.net)}</div>
+              {x.withdrew>0&&<div style={{fontSize:9,color:"var(--rd)",marginTop:2}}>-{fmt(x.withdrew)}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {sel!=="all"&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:12}}>
+          <div className="csm" style={{textAlign:"center"}}>
+            <div style={{fontSize:11,color:"var(--mt)",marginBottom:4}}>💰 Ahorrado</div>
+            <div style={{fontFamily:"Sora",fontSize:20,fontWeight:800,color:"var(--gn)"}}>{fmt(mSav.reduce((s,e)=>s+e.amount,0))}</div>
+          </div>
+          <div className="csm" style={{textAlign:"center"}}>
+            <div style={{fontSize:11,color:"var(--mt)",marginBottom:4}}>📤 Retirado</div>
+            <div style={{fontFamily:"Sora",fontSize:20,fontWeight:800,color:"var(--rd)"}}>{fmt(mRet.reduce((s,e)=>s+e.amount,0))}</div>
+          </div>
+        </div>
+      )}
+
+      <div className="sec"><span className="sec-t">Por Categoría</span><span style={{fontSize:11,color:"var(--mt)"}}>acumulado</span></div>
+      {byCat.length===0&&<div className="empty"><div className="empty-ic">💰</div><div>Sin ahorros aún</div></div>}
+      {byCat.map(c=>(
+        <div key={c.id} className="card" style={{marginBottom:8,cursor:"pointer"}} onClick={()=>setOnlyCat(onlyCat===c.id?"Todas":c.id)}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+            <span style={{fontSize:14,fontWeight:600,display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:20}}>{c.icon}</span>{c.name}
+              {onlyCat===c.id&&<span style={{fontSize:10,color:"var(--ac)",background:"rgba(79,124,255,.12)",borderRadius:6,padding:"1px 6px"}}>filtrado</span>}
+            </span>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontFamily:"Sora",fontSize:16,fontWeight:800,color:c.net>=0?"var(--gn)":"var(--rd)"}}>{fmt(c.net)}</div>
+              {c.withdrew>0&&<div style={{fontSize:10,color:"var(--rd)"}}>-{fmt(c.withdrew)}</div>}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:3}}>
+            {[{lbl:"Ahorrado",v:c.saved,col:"var(--gn)"},{lbl:"Retirado",v:c.withdrew,col:"var(--rd)"}].filter(r=>r.v>0).map(r=>(
+              <div key={r.lbl} style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:10,color:"var(--mt)",width:50}}>{r.lbl}</span>
+                <div style={{flex:1,height:6,background:"rgba(255,255,255,.07)",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${(r.v/cMax)*100}%`,background:r.col,borderRadius:10}}/>
+                </div>
+                <span style={{fontSize:10,color:r.col,fontWeight:700,width:46,textAlign:"right"}}>{fmt(r.v)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="sec">
+        <span className="sec-t">Movimientos</span>
+        {onlyCat!=="Todas"&&<span className="sec-a" onClick={()=>setOnlyCat("Todas")}>Ver todos ✕</span>}
+      </div>
+      <div className="flt">
+        <div className={`fc${onlyCat==="Todas"?" on":""}`} onClick={()=>setOnlyCat("Todas")}>Todas</div>
+        {byCat.map(c=><div key={c.id} className={`fc${onlyCat===c.id?" on":""}`} onClick={()=>setOnlyCat(c.id)}>{c.icon} {c.name}</div>)}
+      </div>
+      {activity.length===0&&<div className="empty"><div className="empty-ic">🔍</div><div>Sin movimientos</div></div>}
+      {activity.map(e=>{
+        const cat=getCat(e.category_id,cats);
+        const isRet=e.type==="retiro";
+        const open=expId===e.id;
+        return (
+          <div key={e.id}>
+            <div className="er" onClick={()=>setExpId(open?null:e.id)}>
+              <div className="ei" style={{background:isRet?"rgba(244,63,94,.12)":cat.color+"22",position:"relative"}}>
+                {cat.icon}
+                {isRet&&<span style={{position:"absolute",bottom:-3,right:-3,fontSize:10}}>📤</span>}
+              </div>
+              <div className="en">
+                <div className="enm">
+                  {cat.name}
+                  {isRet&&<span style={{fontSize:10,background:"rgba(244,63,94,.15)",color:"#f87171",borderRadius:5,padding:"1px 5px",fontWeight:700,marginLeft:5}}>RETIRO</span>}
+                  {e.note?` · ${e.note}`:""}
+                </div>
+                <div className="emt"><PBadge p={e.person}/> · {fmtDate(e.entry_date)}</div>
+              </div>
+              <div className="eam" style={{color:isRet?"var(--rd)":"var(--gn)"}}>{isRet?"-":"+"}{fmt(e.amount)}</div>
+            </div>
+            {open&&<div className="ar"><button className="ab del" onClick={()=>{onSaveEntry(null,e.id);setExpId(null)}}>🗑️ Eliminar</button></div>}
+          </div>
+        );
+      })}
+      {showW&&<WithdrawSheet cats={cats} onClose={()=>setShowW(false)} onSave={e=>{onSaveEntry(e);setShowW(false);}}/>}
+    </div>
+  );
+}
+
+// ============================================================
+// MAIN APP
+// ============================================================
+export default function App(){
+  useEffect(injectStyles,[]);
+
+  const [tab,   setTab]  = useState("dashboard");
+  const [showAdd,setAdd] = useState(false);
+  const [editE,  setEdit]= useState(null);
+  const [showS,  setShowS]=useState(false);
+  const [toast,  setToast]=useState(null);
+  const [selP,   setSelP] = useState(null);  // period target for settle sheet
+
+  const [entries,setEntries]     = useStorage("ff4_entries",    SEED_ENTRIES);
+  const [budget, setBudget]      = useStorage("ff4_budget",     SEED_BUDGET);
+  const [cats,   setCats]        = useStorage("ff4_cats",       CATEGORIES);
+  const [setts,  setSetts]       = useStorage("ff4_setts",      SEED_SETTLEMENTS);
+  const [cfg,    setCfg]         = useStorage("ff4_cfg",        SEED_CFG);
+
+  // Global month selector — default to most recent month
+  const months = useMemo(()=>allMonths(entries),[entries]);
+  const [sel,setSel] = useState(()=>allMonths(SEED_ENTRIES)[0]||"all");
+
+  const t$ = msg=>setToast(msg);
+
+  const handleSave = useCallback((e,delId)=>{
+    if(delId){ setEntries(es=>es.filter(x=>x.id!==delId)); t$("🗑️ Eliminado"); return; }
+    setEntries(es=>[e,...es.filter(x=>x.id!==e.id)]); t$("✓ Guardado");
+  },[]);
+  const handleDel    = useCallback(id=>{ setEntries(es=>es.filter(e=>e.id!==id)); t$("🗑️ Eliminado"); },[]);
+  const handleSettle = useCallback(s=>{ setSetts(ss=>[...ss,s]); t$("✓ Periodo liquidado"); },[]);
+  const handleRemSett= useCallback(i=>{ setSetts(ss=>ss.filter((_,j)=>j!==i)); },[]);
+
+  const period    = useMemo(()=>getCurrentPeriod(cfg.anchorDate,cfg.intervalDays),[cfg]);
+  const activePeriod = selP || period;
+
+  const totalNet  = useMemo(()=>{
+    const sv=entries.filter(e=>e.type==="ahorro").reduce((s,e)=>s+e.amount,0);
+    const rt=entries.filter(e=>e.type==="retiro").reduce((s,e)=>s+e.amount,0);
+    return sv-rt;
+  },[entries]);
+
+  const TABS = [
+    {id:"dashboard", icon:"📊", label:"Inicio"},
+    {id:"trends",    icon:"📈", label:"Trends"},
+    {id:"liquidar",  icon:"⚖️", label:"Liquidar"},
+    {id:"ahorros",   icon:"💰", label:"Ahorros"},
+    {id:"historial", icon:"📋", label:"Historial"},
+  ];
+  const TITLES = {
+    dashboard: {t:"FamFinance",   s:new Date().toLocaleDateString("es-CO",{month:"long",year:"numeric"})},
+    trends:    {t:"Tendencias",   s:"análisis mensual"},
+    liquidar:  {t:"Liquidar",     s:period.label},
+    ahorros:   {t:"Ahorros",      s:`Saldo: ${fmt(totalNet)}`},
+    historial: {t:"Historial",    s:`${entries.filter(e=>e.type!=="retiro").length} movimientos`},
+  };
+
+  const sp = {sel,setSel,months};
+
+  return (
+    <div className="app">
+      <div className="hdr">
+        <div>
+          <div className="hdr-t">{TITLES[tab].t}</div>
+          <div className="hdr-s">{TITLES[tab].s}</div>
+        </div>
+        <div style={{width:38,height:38,background:"var(--ag)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}}>💎</div>
+      </div>
+
+      <div className="body">
+        {tab==="dashboard"&&<Dashboard entries={entries} budget={budget} cats={cats} settlements={setts} cfg={cfg}
+          onOpenSettle={()=>{setSelP(period);setShowS(true);}} {...sp}/>}
+        {tab==="trends"   &&<Trends    entries={entries} cats={cats} budget={budget} {...sp}/>}
+        {tab==="liquidar" &&<Liquidaciones entries={entries} settlements={setts} cfg={cfg} setCfg={setCfg}
+          onOpenSettle={p=>{setSelP(p);setShowS(true);}} onRemoveSett={handleRemSett}/>}
+        {tab==="ahorros"  &&<Savings   entries={entries} cats={cats} onSaveEntry={handleSave} {...sp}/>}
+        {tab==="historial"&&<History   entries={entries} cats={cats} onEdit={setEdit} onDelete={handleDel} {...sp}/>}
+      </div>
+
+      <div className="nav">
+        {TABS.slice(0,2).map(t=>(
+          <div key={t.id} className={`ni${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>
+            <span className="ni-ic">{t.icon}</span><span className="ni-lb">{t.label}</span>
+          </div>
+        ))}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",flex:1}}>
+          <div className="nav-add" onClick={()=>setAdd(true)}>＋</div>
+        </div>
+        {TABS.slice(2).map(t=>(
+          <div key={t.id} className={`ni${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>
+            <span className="ni-ic">{t.icon}</span><span className="ni-lb">{t.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {showAdd &&<EntrySheet onClose={()=>setAdd(false)}  onSave={handleSave} cats={cats}/>}
+      {editE   &&<EntrySheet entry={editE} onClose={()=>setEdit(null)} onSave={handleSave} cats={cats}/>}
+      {showS   &&<SettleSheet entries={entries} period={activePeriod} onClose={()=>{setShowS(false);setSelP(null);}} onSettle={handleSettle}/>}
+      {toast   &&<Toast msg={toast} onDone={()=>setToast(null)}/>}
+    </div>
+  );
+}
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
