@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="FamFinance"/>
+  <meta name="theme-color" content="#0b0d14"/>
+  <title>FamFinance</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <style>
+    body { margin: 0; background: #0b0d14; }
+    #root { min-height: 100dvh; }
+    #loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100dvh; background: #0b0d14;
+      font-family: sans-serif; color: #4f7cff; font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Cargando FamFinance...</div>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.2/babel.min.js"></script>
+
+  <script type="text/babel" src="famfinance_v4.jsx" data-type="module"></script>
+
+  <script type="text/babel">
+    document.getElementById('loading').style.display = 'none';
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
